@@ -1,15 +1,22 @@
 package ru.spbau.mit;
 
-/**
- * Created by Ira on 22/02/16.
- */
-public class CharToIntConverter {
+
+public final class CharToIntConverter {
+
+    public static final int Z_INDEX = 91;
+    public static final int BIG_A_INDEX = 65;
+    public static final int SMALL_A_INDEX = 97;
+    public static final int ALPHABET_SIZE = 26;
+
+    private CharToIntConverter() {
+    }
+
     public static int charToInt(char symb) {
         int index = (int) symb;
-        if (index < 91) {
-            return index - 65;
+        if (index < Z_INDEX) {
+            return index - BIG_A_INDEX;
         } else {
-            return index - 97 + 26;
+            return index - SMALL_A_INDEX + ALPHABET_SIZE;
         }
     }
 

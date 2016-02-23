@@ -1,11 +1,10 @@
 package ru.spbau.mit;
 
 
+import static ru.spbau.mit.CharToIntConverter.ALPHABET_SIZE;
 import static ru.spbau.mit.CharToIntConverter.charToInt;
 
-/**
- * Created by Ira on 22/02/16.
- */
+
 public class StringSetImplNode {
     private final char symb;
     private boolean isTerminal = false;
@@ -15,12 +14,12 @@ public class StringSetImplNode {
 
     public StringSetImplNode(char symb) {
         this.symb = symb;
-        this.children = new StringSetImplNode[52];
+        this.children = new StringSetImplNode[ALPHABET_SIZE * 2];
     }
 
     public StringSetImplNode(char symb, StringSetImplNode parent) {
         this.symb = symb;
-        this.children = new StringSetImplNode[52];
+        this.children = new StringSetImplNode[ALPHABET_SIZE * 2];
         this.parent = parent;
     }
 
@@ -66,7 +65,7 @@ public class StringSetImplNode {
         if (size == 0) {
             parent.deleteChild(symb);
         }
-        if (parent != null){
+        if (parent != null) {
             parent.goToRoot(a);
         }
     }
