@@ -62,7 +62,7 @@ public class StringSetImplNode {
 
     public void goToRoot(int a) {
         size += a;
-        if (size == 0) {
+        if (size == 0 && symb != ' ') {
             parent.deleteChild(symb);
         }
         if (parent != null) {
