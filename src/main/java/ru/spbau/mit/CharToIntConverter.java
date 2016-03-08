@@ -8,7 +8,7 @@ public final class CharToIntConverter {
 
     public static int charToInt(char symb) {
         int index = (int) symb;
-        if (index < 'z') {
+        if (index <= 'Z') {
             return index - 'A';
         } else {
             return index - 'a' + ('z' - 'a' + 1);
