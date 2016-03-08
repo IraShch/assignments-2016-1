@@ -1,25 +1,25 @@
 package ru.spbau.mit;
 
 
-import static ru.spbau.mit.CharToIntConverter.ALPHABET_SIZE;
 import static ru.spbau.mit.CharToIntConverter.charToInt;
 
 
-public class StringSetImplNode {
-    private final char symb;
+class StringSetImplNode {
+
+    private static final int ALPHABET_SIZE = 26;
+
+    private final char symbolOnIncomingEdge;
     private boolean isTerminal = false;
-    private StringSetImplNode[] children;
+    private StringSetImplNode[] children = new StringSetImplNode[ALPHABET_SIZE * 2];
     private int size = 0;
     private StringSetImplNode parent = null;
 
-    public StringSetImplNode(char symb) {
-        this.symb = symb;
-        this.children = new StringSetImplNode[ALPHABET_SIZE * 2];
+    StringSetImplNode(char symbolOnIncomingEdge) {
+        this.symbolOnIncomingEdge = symbolOnIncomingEdge;
     }
 
-    public StringSetImplNode(char symb, StringSetImplNode parent) {
-        this.symb = symb;
-        this.children = new StringSetImplNode[ALPHABET_SIZE * 2];
+    StringSetImplNode(char symbolOnIncomingEdge, StringSetImplNode parent) {
+        this.symbolOnIncomingEdge = symbolOnIncomingEdge;
         this.parent = parent;
     }
 
@@ -62,8 +62,8 @@ public class StringSetImplNode {
 
     public void goToRoot(int a) {
         size += a;
-        if (size == 0 && symb != ' ') {
-            parent.deleteChild(symb);
+        if (size == 0 && symbolOnIncomingEdge != ' ') {
+            parent.deleteChild(symbolOnIncomingEdge);
         }
         if (parent != null) {
             parent.goToRoot(a);
