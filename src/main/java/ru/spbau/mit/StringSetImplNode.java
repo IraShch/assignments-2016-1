@@ -8,20 +8,9 @@ class StringSetImplNode {
 
     private static final int ALPHABET_SIZE = 26;
 
-    private final char symbolOnIncomingEdge;
     private boolean isTerminal = false;
     private StringSetImplNode[] children = new StringSetImplNode[ALPHABET_SIZE * 2];
     private int size = 0;
-    private StringSetImplNode parent = null;
-
-    StringSetImplNode(char symbolOnIncomingEdge) {
-        this.symbolOnIncomingEdge = symbolOnIncomingEdge;
-    }
-
-    StringSetImplNode(char symbolOnIncomingEdge, StringSetImplNode parent) {
-        this.symbolOnIncomingEdge = symbolOnIncomingEdge;
-        this.parent = parent;
-    }
 
     public boolean isTerminal() {
         return isTerminal;
@@ -47,7 +36,7 @@ class StringSetImplNode {
 
     public StringSetImplNode newChild(char symb) {
         int index = charToInt(symb);
-        children[index] = new StringSetImplNode(symb, this);
+        children[index] = new StringSetImplNode();
         return children[index];
     }
 
@@ -55,19 +44,14 @@ class StringSetImplNode {
         return size;
     }
 
+    public void changeSize(int a) {
+        size += a;
+    }
+
     public void deleteChild(char symb) {
         int index = charToInt(symb);
         children[index] = null;
     }
 
-    public void goToRoot(int a) {
-        size += a;
-        if (size == 0 && symbolOnIncomingEdge != ' ') {
-            parent.deleteChild(symbolOnIncomingEdge);
-        }
-        if (parent != null) {
-            parent.goToRoot(a);
-        }
-    }
 
 }
