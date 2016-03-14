@@ -84,6 +84,8 @@ class StringSetImplNode implements StreamSerializable {
                 if (childFlag) {
                     children[i] = new StringSetImplNode();
                     children[i].deserialize(in);
+                } else {
+                    children[i] = null;
                 }
             }
         } catch (IOException e) {
