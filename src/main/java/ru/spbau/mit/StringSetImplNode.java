@@ -1,10 +1,11 @@
 package ru.spbau.mit;
 
 
+import java.io.*;
+
 import static ru.spbau.mit.CharToIntConverter.charToInt;
 
-
-class StringSetImplNode {
+class StringSetImplNode implements StreamSerializable {
 
     private static final int ALPHABET_SIZE = 26;
 
@@ -51,6 +52,44 @@ class StringSetImplNode {
     public void deleteChild(char symb) {
         int index = charToInt(symb);
         children[index] = null;
+    }
+
+    @Override
+    public void serialize(OutputStream out) {
+        try {
+            DataOutputStream dataStream = new DataOutputStream(out);
+            dataStream.writeBoolean(isTerminal);
+            dataStream.writeInt(size);
+            for (int i = 0; i < ALPHABET_SIZE * 2; i++) {
+                boolean childFlag = (children[i] != null);
+                dataStream.writeBoolean(childFlag);
+                if (childFlag) {
+                    children[i].serialize(out);
+                }
+            }
+
+        } catch (IOException e) {
+            throw new SerializationException();
+        }
+    }
+
+    @Override
+    public void deserialize(InputStream in) {
+        try {
+            DataInputStream dataStream = new DataInputStream(in);
+            isTerminal = dataStream.readBoolean();
+            size = dataStream.readInt();
+            for (int i = 0; i < ALPHABET_SIZE * 2; i++) {
+                boolean childFlag = dataStream.readBoolean();
+                if (childFlag) {
+                    children[i] = new StringSetImplNode();
+                    children[i].deserialize(in);
+                }
+            }
+        } catch (IOException e) {
+            throw new SerializationException();
+        }
+
     }
 
 

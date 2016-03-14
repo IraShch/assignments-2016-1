@@ -1,7 +1,10 @@
 package ru.spbau.mit;
 
 
-public class StringSetImpl implements StringSet {
+import java.io.InputStream;
+import java.io.OutputStream;
+
+public class StringSetImpl implements StringSet, StreamSerializable {
 
     private final StringSetImplNode root = new StringSetImplNode();
 
@@ -126,5 +129,15 @@ public class StringSetImpl implements StringSet {
         }
 
         return terminalNode.getSize();
+    }
+
+    @Override
+    public void serialize(OutputStream out) {
+        root.serialize(out);
+    }
+
+    @Override
+    public void deserialize(InputStream in) {
+        root.deserialize(in);
     }
 }
