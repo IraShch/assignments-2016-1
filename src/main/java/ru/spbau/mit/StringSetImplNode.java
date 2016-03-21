@@ -57,41 +57,52 @@ class StringSetImplNode implements StreamSerializable {
     @Override
     public void serialize(OutputStream out) {
         try {
-            DataOutputStream dataStream = new DataOutputStream(out);
-            dataStream.writeBoolean(isTerminal);
-            dataStream.writeInt(size);
-            for (int i = 0; i < ALPHABET_SIZE * 2; i++) {
-                boolean childFlag = (children[i] != null);
-                dataStream.writeBoolean(childFlag);
-                if (childFlag) {
-                    children[i].serialize(out);
-                }
-            }
+            doSerialize(out);
 
         } catch (IOException e) {
             throw new SerializationException();
         }
     }
 
+    private void doSerialize(OutputStream out) throws IOException {
+        DataOutputStream dataStream = new DataOutputStream(out);
+        dataStream.writeBoolean(isTerminal);
+        for (int i = 0; i < ALPHABET_SIZE * 2; i++) {
+            boolean childFlag = (children[i] != null);
+            dataStream.writeBoolean(childFlag);
+            if (childFlag) {
+                children[i].serialize(out);
+            }
+        }
+    }
+
     @Override
     public void deserialize(InputStream in) {
         try {
-            DataInputStream dataStream = new DataInputStream(in);
-            isTerminal = dataStream.readBoolean();
-            size = dataStream.readInt();
-            for (int i = 0; i < ALPHABET_SIZE * 2; i++) {
-                boolean childFlag = dataStream.readBoolean();
-                if (childFlag) {
-                    children[i] = new StringSetImplNode();
-                    children[i].deserialize(in);
-                } else {
-                    children[i] = null;
-                }
-            }
+            doDeserialize(in);
         } catch (IOException e) {
             throw new SerializationException();
         }
 
+    }
+
+    private void doDeserialize(InputStream in) throws IOException {
+        DataInputStream dataStream = new DataInputStream(in);
+        isTerminal = dataStream.readBoolean();
+        size = 0;
+        if (isTerminal) {
+            size++;
+        }
+        for (int i = 0; i < ALPHABET_SIZE * 2; i++) {
+            boolean childFlag = dataStream.readBoolean();
+            if (childFlag) {
+                children[i] = new StringSetImplNode();
+                children[i].deserialize(in);
+                size += children[i].size;
+            } else {
+                children[i] = null;
+            }
+        }
     }
 
 
