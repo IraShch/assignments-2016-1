@@ -11,7 +11,7 @@ public abstract class Function2<T1, T2, R> implements Function<T1, Function<T2, 
         };
     }
 
-    public <R2> Function2<T1, T2, R2> compose(final Function<? super R, R2> g) {
+    public <R2> Function2<T1, T2, R2> compose(final Function<? super R, ? extends R2> g) {
         return new Function2<T1, T2, R2>() {
             @Override
             public R2 apply(T1 t1, T2 t2) {

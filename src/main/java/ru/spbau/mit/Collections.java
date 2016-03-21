@@ -5,11 +5,10 @@ import java.util.Collection;
 import java.util.List;
 
 public final class Collections {
-
     private Collections() {
     }
 
-    public static <T, R> Collection<R> map(Function<T, R> f, Iterable<? extends T> collection) {
+    public static <T, R> Collection<R> map(Function<T, ? extends R> f, Iterable<? extends T> collection) {
         List<R> result = new ArrayList<>();
         for (T elem : collection) {
             result.add(f.apply(elem));
@@ -42,7 +41,8 @@ public final class Collections {
         return takeWhile(p.not(), collection);
     }
 
-    public static <T, R> R foldl(Function2<R, T, R> f, R start, Iterable<? extends T> collection) {
+    public static <T, R> R foldl(Function2<? super R, T, ? extends R> f, R start,
+                                 Iterable<? extends T> collection) {
         R result = start;
         for (T elem : collection) {
             result = f.apply(result, elem);
@@ -50,7 +50,7 @@ public final class Collections {
         return result;
     }
 
-    public static <T, R> R foldr(Function2<? super T, ? super R, ? extends R> f,
+    public static <T, R> R foldr(Function2<T, ? super R, ? extends R> f,
                                  R start, Iterable<? extends T> collection) {
         R result = start;
         List<T> copyCollection = new ArrayList<>();
