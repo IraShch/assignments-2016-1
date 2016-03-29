@@ -6,6 +6,24 @@ import static org.junit.Assert.*;
 
 public class PredicateTest {
 
+    static final Predicate<Integer> IS_EVEN = new Predicate<Integer>() {
+        public Boolean apply(Integer number) {
+            return number % 2 == 0;
+        }
+    };
+
+    static final Predicate<Integer> IS_ODD = new Predicate<Integer>() {
+        public Boolean apply(Integer number) {
+            return !IS_EVEN.apply(number);
+        }
+    };
+
+    static final Predicate<Object> THROWING_EXCEPTION = new Predicate<Object>() {
+        public Boolean apply(Object o) {
+            throw new RuntimeException();
+        }
+    };
+
     private static final int THREE = 3;
     private static final int FOUR = 4;
 
@@ -39,21 +57,4 @@ public class PredicateTest {
         assertTrue(Predicate.ALWAYS_FALSE.not().apply(null));
     }
 
-    static final Predicate<Integer> IS_EVEN = new Predicate<Integer>() {
-        public Boolean apply(Integer number) {
-            return number % 2 == 0;
-        }
-    };
-
-    static final Predicate<Integer> IS_ODD = new Predicate<Integer>() {
-        public Boolean apply(Integer number) {
-            return !IS_EVEN.apply(number);
-        }
-    };
-
-    static final Predicate<Object> THROWING_EXCEPTION = new Predicate<Object>() {
-        public Boolean apply(Object o) {
-            throw new RuntimeException();
-        }
-    };
 }

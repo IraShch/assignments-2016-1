@@ -6,6 +6,26 @@ import static org.junit.Assert.*;
 
 public class Function1Test {
 
+    static final Function1<Integer, Integer> MULTIPLY_BY_2 = new Function1<Integer, Integer>() {
+        public Integer apply(Integer number) {
+            return number * 2;
+        }
+    };
+
+    static final Function1<String, Integer> LENGTH = new Function1<String, Integer>() {
+        public Integer apply(String s) {
+            return s.length();
+        }
+    };
+
+    static final Function1<Object, String> CLASS_NAME = new Function1<Object, String>() {
+        public String apply(Object o) {
+            return o.getClass().getName();
+        }
+    };
+
+    static final Function1<Object, Object> GEN_ID = new Id<>();
+
     private static final int THREE = 3;
 
     @Test
@@ -26,24 +46,4 @@ public class Function1Test {
         assertEquals("java.lang.Integer", fun.apply(THREE));
     }
 
-
-    static final Function1<Integer, Integer> MULTIPLY_BY_2 = new Function1<Integer, Integer>() {
-        public Integer apply(Integer number) {
-            return number * 2;
-        }
-    };
-
-    static final Function1<String, Integer> LENGTH = new Function1<String, Integer>() {
-        public Integer apply(String s) {
-            return s.length();
-        }
-    };
-
-    static final Function1<Object, String> CLASS_NAME = new Function1<Object, String>() {
-        public String apply(Object o) {
-            return o.getClass().getName();
-        }
-    };
-
-    static final Function1<Object, Object> GEN_ID = new Id<>();
 }

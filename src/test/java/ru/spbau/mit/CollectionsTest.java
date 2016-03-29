@@ -12,9 +12,16 @@ import static org.junit.Assert.assertEquals;
 
 public class CollectionsTest {
 
+    public static final Function2<Integer, Integer, Integer> DIFF = new Function2<Integer, Integer, Integer>() {
+        @Override
+        public Integer apply(Integer t1, Integer t2) {
+            return t1 - t2;
+        }
+    };
+
     private static final Integer TWO = 2;
     private static final Integer THREE = 3;
-    private static final Integer SIX = 6;
+    private static final Integer MSIX = -6;
 
     @Test
     public void testMap() throws Exception {
@@ -53,21 +60,14 @@ public class CollectionsTest {
     @Test
     public void testFoldl() throws Exception {
         List<Integer> numbers = Arrays.asList(1, TWO, THREE);
-        assertEquals(SIX, Collections.foldl(SUM, 0, numbers));
+        assertEquals(MSIX, Collections.foldl(DIFF, 0, numbers));
 
     }
 
     @Test
     public void testFoldr() throws Exception {
         List<Integer> numbers = Arrays.asList(1, TWO, THREE);
-        assertEquals(SIX, Collections.foldr(SUM, 0, numbers));
+        assertEquals(TWO, Collections.foldr(DIFF, 0, numbers));
 
     }
-
-    public static final Function2<Integer, Integer, Integer> SUM = new Function2<Integer, Integer, Integer>() {
-        @Override
-        public Integer apply(Integer t1, Integer t2) {
-            return t1 + t2;
-        }
-    };
 }

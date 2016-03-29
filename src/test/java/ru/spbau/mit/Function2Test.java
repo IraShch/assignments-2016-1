@@ -6,6 +6,28 @@ import static org.junit.Assert.assertEquals;
 
 public class Function2Test {
 
+    static final Function2<String, Integer, Boolean> LENGTH_PLUS_N_IS_ODD =
+            new Function2<String, Integer, Boolean>() {
+                @Override
+                public Boolean apply(String s, Integer number) {
+                    return (s.length() + number) % 2 != 0;
+                }
+            };
+
+    static final Function2<Object, Object, Object> GEN_FST = new Function2<Object, Object, Object>() {
+        @Override
+        public Object apply(Object o, Object o2) {
+            return o;
+        }
+    };
+
+    static final Function2<Object, Object, Object> GEN_SND = new Function2<Object, Object, Object>() {
+        @Override
+        public Object apply(Object o, Object o2) {
+            return o2;
+        }
+    };
+
     private static final int THREE = 3;
 
     @Test
@@ -35,25 +57,4 @@ public class Function2Test {
         assertEquals(true, curried.apply(2));
     }
 
-    static final Function2<String, Integer, Boolean> LENGTH_PLUS_N_IS_ODD =
-            new Function2<String, Integer, Boolean>() {
-        @Override
-        public Boolean apply(String s, Integer number) {
-            return (s.length() + number) % 2 != 0;
-        }
-    };
-
-    static final Function2<Object, Object, Object> GEN_FST = new Function2<Object, Object, Object>() {
-        @Override
-        public Object apply(Object o, Object o2) {
-            return o;
-        }
-    };
-
-    static final Function2<Object, Object, Object> GEN_SND = new Function2<Object, Object, Object>() {
-        @Override
-        public Object apply(Object o, Object o2) {
-            return o2;
-        }
-    };
 }
