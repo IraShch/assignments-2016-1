@@ -1,0 +1,4 @@
+In this example, widgets is a Collection<Widget>.
+We create a stream of Widget objects via Collection.stream(), filter it to produce
+Then this stream is summed to produce a total weight.
+In addition to Stream, which is a stream of object references, there are primitive specializations for IntStream, LongStream, and DoubleStream, all of which are referred to as "streams" and conform to the characteristics and restrictions described here.
