@@ -20,7 +20,8 @@ public final class Injector {
         return helper(rootClassName, implementationClassNames, initializedItems);
     }
 
-    private static Object helper(String rootClassName, List<String> implementationClassNames, Map<String, Object> initializedItems) throws Exception {
+    private static Object helper(String rootClassName, List<String> implementationClassNames,
+                                 Map<String, Object> initializedItems) throws Exception {
         if (initializedItems.containsKey(rootClassName)) {
             Object item = initializedItems.get(rootClassName);
             if (item == null) {
