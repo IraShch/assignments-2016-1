@@ -4,13 +4,10 @@ package ru.spbau.mit;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.List;
-//import  java.lang.*;
 import java.util.Map;
 
 
 public final class Injector {
-    private static final Map<String, Object> INITIALIZED_ITEMS = new HashMap<>();
-
     private Injector() {
     }
 
@@ -19,14 +16,19 @@ public final class Injector {
      * `implementationClassNames` for concrete dependencies.
      */
     public static Object initialize(String rootClassName, List<String> implementationClassNames) throws Exception {
-        if (INITIALIZED_ITEMS.containsKey(rootClassName)) {
-            Object item = INITIALIZED_ITEMS.get(rootClassName);
+        Map<String, Object> initializedItems = new HashMap<>();
+        return helper(rootClassName, implementationClassNames, initializedItems);
+    }
+
+    private static Object helper(String rootClassName, List<String> implementationClassNames, Map<String, Object> initializedItems) throws Exception {
+        if (initializedItems.containsKey(rootClassName)) {
+            Object item = initializedItems.get(rootClassName);
             if (item == null) {
                 throw new InjectionCycleException();
             }
             return item;
         }
-        INITIALIZED_ITEMS.put(rootClassName, null);
+        initializedItems.put(rootClassName, null);
 
         Class cls = Class.forName(rootClassName);
         Constructor[] c = cls.getConstructors();
@@ -35,7 +37,7 @@ public final class Injector {
         Class[] pTypes = rootConstructor.getParameterTypes();
         if (pTypes.length == 0) {
             Object item = cls.newInstance();
-            INITIALIZED_ITEMS.put(rootClassName, item);
+            initializedItems.put(rootClassName, item);
             return item;
         }
 
@@ -57,11 +59,12 @@ public final class Injector {
                     throw new AmbiguousImplementationException();
                 }
             }
-            pInst[i] = initialize(implementation, implementationClassNames);
+            pInst[i] = helper(implementation, implementationClassNames, initializedItems);
         }
 
         Object res = rootConstructor.newInstance(pInst);
-        INITIALIZED_ITEMS.put(rootClassName, res);
+        initializedItems.put(rootClassName, res);
         return res;
     }
+
 }
