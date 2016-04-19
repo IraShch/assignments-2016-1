@@ -53,12 +53,12 @@ public final class Injector {
                     implFoundCounter += 1;
                     implementation = putativeImplName;
                 }
-                if (implFoundCounter == 0) {
-                    throw new ImplementationNotFoundException();
-                }
-                if (implFoundCounter > 1) {
-                    throw new AmbiguousImplementationException();
-                }
+            }
+            if (implFoundCounter == 0) {
+                throw new ImplementationNotFoundException();
+            }
+            if (implFoundCounter > 1) {
+                throw new AmbiguousImplementationException();
             }
             pInst[i] = helper(implementation, implementationClassNames, initializedItems);
         }
