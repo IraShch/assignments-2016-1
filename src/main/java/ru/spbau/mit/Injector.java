@@ -54,6 +54,10 @@ public final class Injector {
                     implementation = putativeImplName;
                 }
             }
+            if (type.isAssignableFrom(cls)) {
+                implFoundCounter += 1;
+                implementation = rootClassName;
+            }
             if (implFoundCounter == 0) {
                 throw new ImplementationNotFoundException();
             }
