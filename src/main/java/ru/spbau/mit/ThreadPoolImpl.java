@@ -29,4 +29,16 @@ public class ThreadPoolImpl implements ThreadPool {
     public boolean isShutdown() {
         return isShutdown;
     }
+
+    protected <R> LightFutureImpl<R> submitFromParent(Supplier<R> supplier, LightFuture<?> parent) {
+        LightFutureImpl<R> task = new LightFutureImpl<>(supplier, this);
+        if (parent.isReady()) {
+            taskQueue.put(task);
+        }
+        return task;
+    }
+
+    protected void putTask(LightFutureImpl<?> item) {
+        taskQueue.put(item);
+    }
 }

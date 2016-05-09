@@ -5,13 +5,15 @@ import java.util.function.Supplier;
 
 public class LightFutureImpl<R> implements LightFuture<R> {
     private final Supplier<R> supplier;
-    private final ThreadPool pool;
+    private final ThreadPoolImpl pool;
 
     private volatile R result = null;
     private volatile boolean isReady = false;
     private volatile Throwable exc = null;
 
-    public LightFutureImpl(Supplier<R> supplier, ThreadPool pool) {
+    private LightFuture<?> child = null;
+
+    protected LightFutureImpl(Supplier<R> supplier, ThreadPoolImpl pool) {
         this.supplier = supplier;
         this.pool = pool;
     }
@@ -24,6 +26,9 @@ public class LightFutureImpl<R> implements LightFuture<R> {
                 exc = e;
             }
             isReady = true;
+            if (child != null) {
+                pool.putTask((LightFutureImpl<?>) child);
+            }
             notifyAll();
         }
     }
@@ -49,7 +54,7 @@ public class LightFutureImpl<R> implements LightFuture<R> {
 
     @Override
     public <U> LightFuture<U> thenApply(Function<? super R, ? extends U> f) {
-        return pool.submit(() -> {
+        LightFuture<U> nextFuture = pool.submitFromParent(() -> {
             R intermediateResult = null;
             try {
                 intermediateResult = LightFutureImpl.this.get();
@@ -57,6 +62,8 @@ public class LightFutureImpl<R> implements LightFuture<R> {
                 throw new RuntimeException("One of the futures in chain resulted in exception", e);
             }
             return f.apply(intermediateResult);
-        });
+        }, this);
+        child = nextFuture;
+        return nextFuture;
     }
 }
