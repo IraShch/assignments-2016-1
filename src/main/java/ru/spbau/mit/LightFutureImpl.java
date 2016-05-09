@@ -1,5 +1,7 @@
 package ru.spbau.mit;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -11,7 +13,7 @@ public class LightFutureImpl<R> implements LightFuture<R> {
     private volatile boolean isReady = false;
     private volatile Throwable exc = null;
 
-    private LightFuture<?> child = null;
+    private List<LightFuture<?>> children = new LinkedList<>();
 
     protected LightFutureImpl(Supplier<R> supplier, ThreadPoolImpl pool) {
         this.supplier = supplier;
@@ -26,8 +28,10 @@ public class LightFutureImpl<R> implements LightFuture<R> {
                 exc = e;
             }
             isReady = true;
-            if (child != null) {
-                pool.putTask((LightFutureImpl<?>) child);
+            if (!children.isEmpty()) {
+                for (LightFuture<?> child : children) {
+                    pool.putTask((LightFutureImpl<?>) child);
+                }
             }
             notifyAll();
         }
@@ -63,7 +67,7 @@ public class LightFutureImpl<R> implements LightFuture<R> {
             }
             return f.apply(intermediateResult);
         }, this);
-        child = nextFuture;
+        children.add(nextFuture);
         return nextFuture;
     }
 }

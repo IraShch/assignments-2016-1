@@ -102,7 +102,7 @@ public class ThreadPoolTests {
 
     @Test
     public void testThenApply() throws LightExecutionException, InterruptedException {
-        ThreadPool threadPool = new ThreadPoolImpl(1);
+        ThreadPool threadPool = new ThreadPoolImpl(TASK_N);
 
         LightFuture<StringBuilder> result = threadPool.submit(() -> {
             StringBuilder ini = new StringBuilder();
@@ -113,20 +113,39 @@ public class ThreadPoolTests {
                 e.printStackTrace();
             }
             ini.append("a");
-            System.out.println("First ready");
+            System.out.println("Parent ready");
             return ini;
         });
 
-        LightFuture<StringBuilder> nextResult = result.thenApply(x -> {
-            System.out.println("Second started");
-            x.append("b");
-            return x;
+        LightFuture<StringBuilder> firstChild = result.thenApply(x -> {
+            System.out.println("First child started");
+            StringBuilder res = new StringBuilder(x);
+            res.append("b");
+            return res;
         });
-        assertFalse(result.isReady());
-        assertFalse(nextResult.isReady());
+
+        LightFuture<StringBuilder> secondChild = result.thenApply(x -> {
+            System.out.println("Second child started");
+            StringBuilder res = new StringBuilder(x);
+            res.append("c");
+            return res;
+        });
+
+        LightFuture<StringBuilder> grandson = firstChild.thenApply(x -> {
+            System.out.println("Grandson started");
+            StringBuilder res = new StringBuilder(x);
+            res.append("d");
+            return res;
+        });
+        assertFalse(firstChild.isReady());
+        assertFalse(grandson.isReady());
+        assertFalse(secondChild.isReady());
 
         Thread.sleep(SLEEP_TIME * 2);
-        assertEquals("aab", nextResult.get().toString());
+        assertEquals("aa", result.get().toString());
+        assertEquals("aab", firstChild.get().toString());
+        assertEquals("aac", secondChild.get().toString());
+        assertEquals("aabd", grandson.get().toString());
 
         threadPool.shutdown();
     }
