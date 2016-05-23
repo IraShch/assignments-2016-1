@@ -2,9 +2,14 @@ package ru.spbau.mit;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
@@ -74,19 +79,40 @@ public class ThreadPoolTests {
     }
 
     @Test
-    public void countThreads() throws LightExecutionException, InterruptedException {
+    public void countThreads() throws LightExecutionException, InterruptedException, BrokenBarrierException {
         ThreadPool threadPool = new ThreadPoolImpl(TASK_N);
 
         List<LightFuture<Integer>> results = new LinkedList<>();
+        List<Boolean> startFlags = new ArrayList<>(TASK_N);
+        CyclicBarrier barrier = new CyclicBarrier(TASK_N + 1);
+
         for (int i = 0; i < TASK_N; i++) {
-            results.add(threadPool.submit(new SleepingTask()));
+            int currentIndex = i;
+            startFlags.add(false);
+            results.add(threadPool.submit(() -> {
+                startFlags.set(currentIndex, true);
+                try {
+                    barrier.await();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (BrokenBarrierException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }));
         }
 
-        Thread.sleep(SLEEP_TIME);
-
-        for (int i = 1; i < TASK_N; i++) {
-            assertTrue(results.get(i).isReady());
+        while (startFlags.stream().anyMatch((it) -> it.equals(false))) {
+            Thread.sleep(0);
         }
+
+        Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+        Set<String> poolThreads = threadSet.stream().map(Thread::getName).
+                filter((it) -> it.startsWith(ThreadPoolImpl.THREAD_NAME_PREFIX)).collect(Collectors.toSet());
+
+        assertEquals(TASK_N, poolThreads.size());
+
+        barrier.await();
 
         threadPool.shutdown();
     }

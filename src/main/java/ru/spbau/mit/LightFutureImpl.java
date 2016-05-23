@@ -58,7 +58,7 @@ public class LightFutureImpl<R> implements LightFuture<R> {
 
     @Override
     public <U> LightFuture<U> thenApply(Function<? super R, ? extends U> f) {
-        LightFuture<U> nextFuture = pool.submitFromParent(() -> {
+        Supplier<U> supplier1 = () -> {
             R intermediateResult = null;
             try {
                 intermediateResult = LightFutureImpl.this.get();
@@ -66,7 +66,12 @@ public class LightFutureImpl<R> implements LightFuture<R> {
                 throw new RuntimeException("One of the futures in chain resulted in exception", e);
             }
             return f.apply(intermediateResult);
-        }, this);
+        };
+        LightFutureImpl<U> task = new LightFutureImpl<>(supplier1, pool);
+        if (isReady()) {
+            pool.submit(task);
+        }
+        LightFuture<U> nextFuture = task;
         children.add(nextFuture);
         return nextFuture;
     }
